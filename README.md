@@ -1,4 +1,4 @@
 # Econometrics
 # Zet uw naam hierbij om te testen of het goed werkt (in RStudio uiteraard)
-Joakim
+Joakim (Land Rover is apeshit)
 Lorenzo (Volkswagen go brrrr)
