@@ -75,3 +75,5 @@ install.packages("C:\\users\\ymeersch\\Desktop\\EconometricsUGent_1.0.tar.gz", s
 
 ## For Mac
 ## install.packages("H:/Desktop/EconometricsUGent_1.0.tar.gz", type="source",repos = NULL, lib = output) 
+
+#Test
