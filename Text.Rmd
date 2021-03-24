@@ -1,0 +1,16 @@
+#Specification
+##ln(GDP)= beta1 + beta2 * trade + alpha * X + error
+
+GDP: per worker; in usd
+trade: (export + import) / total GDP
+
+X: control variables for working population in thousands (lnPOP) and area in miles²
+
+# Test
+We want to establish whether *trade* has a positive impact on *GDP per worker*
+=> one-sided test with
+
+H0 : beta2 <= 0
+
+H1 : beta2 > 0 (our hypothesis)
+

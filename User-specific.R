@@ -37,7 +37,7 @@ rm(list = ls())   # Clear workspace
 
 ## Rstudio installed on your pc
 ## For Windows
-##output="C:\\users\\ymeersch\\Desktop"
+output="C:\\Users\\joaki\\Desktop"
 
 
 ## For Mac
