@@ -18,7 +18,7 @@ rm(list = ls())   # Clear workspace
 
 ## Rstudio installed on your pc
 ## For Windows
-setwd("C:\\users\\ymeersch\\Desktop")
+##setwd("C:\\users\\ymeersch\\Desktop")
 
 ## For Mac
 ## setwd("/users/ymeersch/Desktop")
@@ -37,7 +37,7 @@ setwd("C:\\users\\ymeersch\\Desktop")
 
 ## Rstudio installed on your pc
 ## For Windows
-output="C:\\users\\ymeersch\\Desktop"
+##output="C:\\users\\ymeersch\\Desktop"
 
 
 ## For Mac
@@ -74,7 +74,7 @@ if(!require(openxlsx)){install.packages("openxlsx")}
 
 ## Rstudio installed on your pc
 ## For Windows
-install.packages("C:\\users\\ymeersch\\Desktop\\EconometricsUGent_1.0.tar.gz", source = TRUE, repos = NULL)
+install.packages("EconometricsUGent_1.0.tar.gz", source = TRUE, repos = NULL)
 
 ## For Mac
 ## install.packages("/users/ymeersch/Desktop/EconometricsUGent_1.0.tar.gz", type="source", repos = NULL)
@@ -85,5 +85,3 @@ install.packages("C:\\users\\ymeersch\\Desktop\\EconometricsUGent_1.0.tar.gz", s
 
 ## For Mac
 ## install.packages("H:/Desktop/EconometricsUGent_1.0.tar.gz", type="source",repos = NULL, lib = output) 
-
-#Test
