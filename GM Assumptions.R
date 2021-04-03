@@ -4,21 +4,24 @@ MU = residuals(OLS) #create vector of the residuals
 
 #-------------------------------------------------------------------
 ##Stochastic regressors
+
 jarque.test(trade)
 jarque.test(area)
 jarque.test(pop)
 jarque.test(landlock)
 jarque.test(neighbors)
 
-jarque.test(MU)
-#normality of estimated residuals is not rejected at 5% level
+
 
 #-------------------------------------------------------------------
 ##Non-normal error terms
 
+jarque.test(MU)
+#normality of estimated residuals is not rejected at 5% level
 
 #-------------------------------------------------------------------
 ##Multicollinearity
+
 #als de R² hoog is en t statistiek laag/pairwise correlation checken
 cor(trade, pop)
 cor(trade, area)
@@ -54,11 +57,21 @@ dwtest(OLS, alternative = "less")
 
 bgtest(OLS, order = 5)
 
+#apparent autocorrelation present, now data will be reshuffled (as the current alphabetical order has no meaning)
+gdpReshuffled = sample(gdp)
+OLS_Reshuffled = lm(gdpReshuffled ~ trade + area + pop)
+
+dwtest(OLS_Reshuffled, alternative = "two.sided")
+dwtest(OLS_Reshuffled, alternative = "greater")
+dwtest(OLS_Reshuffled, alternative = "less")
+
+bgtest(OLS_Reshuffled, order = 5)
+#after reshuffling, all autocorrelation disappears
+
 #-------------------------------------------------------------------
 ##Specification error
+
 ###Ramsey RESET test for functional form
 
 #-------------------------------------------------------------------
 ##Endogeneity
-
-
