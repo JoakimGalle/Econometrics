@@ -50,6 +50,18 @@ print(xiTest)
 
 #-------------------------------------------------------------------
 ##Autocorrelation
+##runs test
+Nruns = runs(OLS)
+R = Nruns[1]
+N1 = Nruns[2]
+N2 = Nruns[3]
+N=N1+N2
+E_R = 2*N1*N2/N+1
+s_R = sqrt(2*N1*N2*(2*N1*N2-N)/(N^2)/(N-1))
+results_R = c(R,E_R,E_R-1.96*s_R,E_R+1.96*s_R)
+names(results_R)=c("Observed Runs","Expected Runs","95% Lower bound","95% Upper bound")
+stargazer(results_R,type="text")
+
 
 dwtest(OLS, alternative = "two.sided")
 dwtest(OLS, alternative = "greater")
