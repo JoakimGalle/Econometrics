@@ -5,18 +5,15 @@ MU = residuals(OLS) #create vector of the residuals
 #-------------------------------------------------------------------
 ##Stochastic regressors
 
-jarque.test(trade)
-jarque.test(area)
-jarque.test(pop)
-jarque.test(landlock)
-jarque.test(neighbors)
-
-
+#?
 
 #-------------------------------------------------------------------
 ##Non-normal error terms
 
 jarque.test(MU)
+hist(MU)
+
+
 #normality of estimated residuals is not rejected at 5% level
 
 #-------------------------------------------------------------------
@@ -26,8 +23,23 @@ jarque.test(MU)
 cor(trade, pop)
 cor(trade, area)
 cor(pop, area)
-coeftest(OLS)
-#als oplossing voorstellen om area te droppen? (sterk gecorreleerd met populatie EN super lage t) (bias als gevolg van droppen?)
+
+R_trade = summary(lm(trade ~ pop + area))$r.squared
+R_area = summary(lm(area ~ pop + trade))$r.squared
+R_pop = summary(lm(pop ~ trade + area))$r.squared
+print(R_trade)
+print(R_area)
+print(R_pop)
+VIF_trade = 1/(1-R_trade)
+VIF_area = 1/(1-R_area)
+VIF_pop = 1/(1-R_pop)
+print(VIF_trade)
+print(VIF_area)
+print(VIF_pop)
+vcov(OLS)
+
+#als oplossing voorstellen om area te droppen of niets doen? (sterk gecorreleerd met populatie EN super lage t) (bias als gevolg van droppen?)
+OLS_AreaRemoved = lm(gdp ~ trade + pop)
 
 #-------------------------------------------------------------------
 ##Heteroscedasticity
@@ -39,13 +51,15 @@ plot(area, I(MU^2))
 plot(pop, I(MU^2))
 
 #Goldfeld-Quandt
-gqtest(OLS)
+GQ = gqtest(OLS)
+GQ
 #p value original model 0.9063 => insignificant => do not reject assumption that variance differs in first & second part
 
 #White test
 auxiliary = lm(MU ~ area + pop + trade + I(trade^2) + I(pop^2) + I(area^2) + area*pop + area*trade + pop*trade)
 xiTest = 150 * summary(auxiliary)$r.squared
 print(xiTest)
+stargazer(auxiliary,type="text",style="all",dep.var.labels = "squared(res)")
 #homoscedasticity can't be rejected
 
 #-------------------------------------------------------------------
@@ -67,7 +81,10 @@ dwtest(OLS, alternative = "two.sided")
 dwtest(OLS, alternative = "greater")
 dwtest(OLS, alternative = "less")
 
-bgtest(OLS, order = 5)
+BG = bgtest(OLS, order = 5)
+
+BGsum = c(BG$statistic, BG$p.value)
+stargazer(BGsum, type = "text")
 
 #apparent autocorrelation present, now data will be reshuffled (as the current alphabetical order has no meaning)
 gdpReshuffled = sample(gdp)
@@ -79,6 +96,8 @@ dwtest(OLS_Reshuffled, alternative = "less")
 
 bgtest(OLS_Reshuffled, order = 5)
 #after reshuffling, all autocorrelation disappears
+#How possible?
+#Remediation: GLS?
 
 #-------------------------------------------------------------------
 ##Specification error
