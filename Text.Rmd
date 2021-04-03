@@ -13,4 +13,3 @@ We want to establish whether *trade* has a positive impact on *GDP per worker*
 H0 : beta2 <= 0
 
 H1 : beta2 > 0 (our hypothesis)
-
