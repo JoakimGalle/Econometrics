@@ -49,3 +49,4 @@ pop   = log(data$`Workers.(in.thousands)`)          # ln Population
 trade = data$Trade                                  # Trade share
 landlocked = factor(data$Landlocked.dummy)          # Landlocked dummy
 neighbors = data$Number.of.neighboring.countries    # Number of neighboring countries 
+continent = factor(data$Continent)   

@@ -1,6 +1,6 @@
 #Analysis of the validity of the assumptions
 
-MU = residuals(OLS) #create vector of the residuals
+MU = residuals(OLS) #create vector of the estimated residuals
 
 #-------------------------------------------------------------------
 ##Stochastic regressors
@@ -45,7 +45,8 @@ OLS_AreaRemoved = lm(gdp ~ trade + pop)
 ##Heteroscedasticity
 
 #graphical
-plot(gdp, I(MU^2))
+gdpEstimated = OLS$fitted.values
+plot(gdpEstimated, I(MU^2))
 plot(trade, I(MU^2))
 plot(area, I(MU^2))
 plot(pop, I(MU^2))
@@ -82,11 +83,11 @@ dwtest(OLS, alternative = "greater")
 dwtest(OLS, alternative = "less")
 
 BG = bgtest(OLS, order = 5)
+BGsummary = c(BG$statistic, BG$p.value)
+names(BGsummary) = c("Test-statistic","P-value")
+stargazer(BGsummary, type = "text")
 
-BGsum = c(BG$statistic, BG$p.value)
-stargazer(BGsum, type = "text")
-
-#apparent autocorrelation present, now data will be reshuffled (as the current alphabetical order has no meaning)
+#apparent autocorrelation present, now data will be reshuffled
 gdpReshuffled = sample(gdp)
 OLS_Reshuffled = lm(gdpReshuffled ~ trade + area + pop)
 
@@ -95,14 +96,26 @@ dwtest(OLS_Reshuffled, alternative = "greater")
 dwtest(OLS_Reshuffled, alternative = "less")
 
 bgtest(OLS_Reshuffled, order = 5)
-#after reshuffling, all autocorrelation disappears
-#How possible?
-#Remediation: GLS?
+
+#after reshuffling, all autocorrelation disappears, not ordered by continent anymore
+
+#Remediation: GLS? Including the continent as a variable?
+OLS_Continent = lm(gdp ~ trade + pop + continent)
+
+dwtest(OLS_Continent, alternative = "two.sided")
+dwtest(OLS_Continent, alternative = "greater")
+dwtest(OLS_Continent, alternative = "less")
+
+bgtest(OLS_Continent, order = 5)
+
+BG_Continent = bgtest(OLS_Continent, order = 5)
+BGCsummary = c(BG_Continent$statistic, BG_Continent$p.value)
+names(BGCsummary) = c("Test-statistic","P-value")
+stargazer(BGCsummary, type = "text")
 
 #-------------------------------------------------------------------
 ##Specification error
 
-###Ramsey RESET test for functional form
 
 #-------------------------------------------------------------------
 ##Endogeneity
