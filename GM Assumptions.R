@@ -54,7 +54,7 @@ plot(pop, I(MU^2))
 #Goldfeld-Quandt
 GQ = gqtest(OLS)
 GQ
-#p value original model 0.9063 => insignificant => do not reject assumption that variance differs in first & second part
+#p value original model 0.9063 => insignificant => do not reject assumption that variance remains constant in first & second part
 
 #White test
 auxiliary = lm(MU ~ area + pop + trade + I(trade^2) + I(pop^2) + I(area^2) + area*pop + area*trade + pop*trade)
@@ -65,8 +65,17 @@ stargazer(auxiliary,type="text",style="all",dep.var.labels = "squared(res)")
 
 #-------------------------------------------------------------------
 ##Autocorrelation
-##runs test
-Nruns = runs(OLS)
+
+orderTrade = data[order(data$Trade),]
+orderPop = data[order(data$Area),]
+orderArea = data[order(log(data$`Workers.(in.thousands)`)),]
+
+#ORDERED BY TRADE
+
+OLS_OrderTrade = lm(log(orderTrade$`GDP.per.worker.(in.US.dollars)`) ~ log(orderTrade$`Area.(in.sq.miles)`)  + log(orderTrade$`Workers.(in.thousands)`) + orderTrade$Trade )
+
+#runs test
+Nruns = runs(OLS_OrderTrade)
 R = Nruns[1]
 N1 = Nruns[2]
 N2 = Nruns[3]
@@ -78,44 +87,127 @@ names(results_R)=c("Observed Runs","Expected Runs","95% Lower bound","95% Upper 
 stargazer(results_R,type="text")
 
 
-dwtest(OLS, alternative = "two.sided")
-dwtest(OLS, alternative = "greater")
-dwtest(OLS, alternative = "less")
+dwtest(OLS_OrderTrade, alternative = "two.sided")
+dwtest(OLS_OrderTrade, alternative = "greater")
+dwtest(OLS_OrderTrade, alternative = "less")
 
-BG = bgtest(OLS, order = 5)
+BG = bgtest(OLS_OrderTrade, order = 5)
 BGsummary = c(BG$statistic, BG$p.value)
 names(BGsummary) = c("Test-statistic","P-value")
 stargazer(BGsummary, type = "text")
 
-#apparent autocorrelation present, now data will be reshuffled
-gdpReshuffled = sample(gdp)
-OLS_Reshuffled = lm(gdpReshuffled ~ trade + area + pop)
+#ORDERED BY AREA
 
-dwtest(OLS_Reshuffled, alternative = "two.sided")
-dwtest(OLS_Reshuffled, alternative = "greater")
-dwtest(OLS_Reshuffled, alternative = "less")
+OLS_OrderArea = lm(log(orderArea$`GDP.per.worker.(in.US.dollars)`) ~ log(orderArea$`Area.(in.sq.miles)`)  + log(orderArea$`Workers.(in.thousands)`) + data$Trade )
 
-bgtest(OLS_Reshuffled, order = 5)
+#runs test
+Nruns = runs(OLS_OrderArea)
+R = Nruns[1]
+N1 = Nruns[2]
+N2 = Nruns[3]
+N=N1+N2
+E_R = 2*N1*N2/N+1
+s_R = sqrt(2*N1*N2*(2*N1*N2-N)/(N^2)/(N-1))
+results_R = c(R,E_R,E_R-1.96*s_R,E_R+1.96*s_R)
+names(results_R)=c("Observed Runs","Expected Runs","95% Lower bound","95% Upper bound")
+stargazer(results_R,type="text")
 
-#after reshuffling, all autocorrelation disappears, not ordered by continent anymore
 
-#Remediation: GLS? Including the continent as a variable?
-OLS_Continent = lm(gdp ~ trade + pop + continent)
+dwtest(OLS_OrderArea, alternative = "two.sided")
+dwtest(OLS_OrderArea, alternative = "greater")
+dwtest(OLS_OrderArea, alternative = "less")
 
-dwtest(OLS_Continent, alternative = "two.sided")
-dwtest(OLS_Continent, alternative = "greater")
-dwtest(OLS_Continent, alternative = "less")
+BG = bgtest(OLS_OrderArea, order = 5)
+BGsummary = c(BG$statistic, BG$p.value)
+names(BGsummary) = c("Test-statistic","P-value")
+stargazer(BGsummary, type = "text")
 
-bgtest(OLS_Continent, order = 5)
+#ORDERED BY POPULATION
 
-BG_Continent = bgtest(OLS_Continent, order = 5)
-BGCsummary = c(BG_Continent$statistic, BG_Continent$p.value)
-names(BGCsummary) = c("Test-statistic","P-value")
-stargazer(BGCsummary, type = "text")
+OLS_OrderPop = lm(log(orderPop$`GDP.per.worker.(in.US.dollars)`) ~ log(orderPop$`Area.(in.sq.miles)`)  + log(orderPop$`Workers.(in.thousands)`) + orderPop$Trade )
+
+#runs test
+Nruns = runs(OLS_OrderPop)
+R = Nruns[1]
+N1 = Nruns[2]
+N2 = Nruns[3]
+N=N1+N2
+E_R = 2*N1*N2/N+1
+s_R = sqrt(2*N1*N2*(2*N1*N2-N)/(N^2)/(N-1))
+results_R = c(R,E_R,E_R-1.96*s_R,E_R+1.96*s_R)
+names(results_R)=c("Observed Runs","Expected Runs","95% Lower bound","95% Upper bound")
+stargazer(results_R,type="text")
+
+
+dwtest(OLS_OrderPop, alternative = "two.sided")
+dwtest(OLS_OrderPop, alternative = "greater")
+dwtest(OLS_OrderPop, alternative = "less")
+
+BG = bgtest(OLS_OrderPop, order = 5)
+BGsummary = c(BG$statistic, BG$p.value)
+names(BGsummary) = c("Test-statistic","P-value")
+stargazer(BGsummary, type = "text")
 
 #-------------------------------------------------------------------
 ##Specification error
 
+#Visual inspection
+plot(trade, MU)
+plot(area, MU)
+plot(pop, MU)
+
+#No heteroskedasticity, no autocorrelation (see previous steps)
+
+#Ramsey RESET test
+resettest(OLS)
+#Null hypothesis can't be rejected => not enough proof towards specification error
+
+#Langrange multiplier test
+
+##trade
+OLS_MU_Trade = lm(MU ~ poly(trade, degree = 3))
+xiTest = 150 * summary(OLS_MU_Trade)$r.squared
+print(xiTest)
+qchisq(p = 0.05, df = 3, lower.tail = FALSE)
+
+##area
+OLS_MU_Area = lm(MU ~ poly(area, degree = 3))
+xiTest = 150 * summary(OLS_MU_Area)$r.squared
+print(xiTest)
+qchisq(p = 0.05, df = 3, lower.tail = FALSE)
+
+##population
+OLS_MU_Pop = lm(MU ~ poly(pop, degree = 3))
+xiTest = 150 * summary(OLS_MU_Pop)$r.squared
+print(xiTest)
+qchisq(p = 0.05, df = 2, lower.tail = FALSE)
+#No proof towards specification error
+
+#Forecast Xi² test
+
+##trade
+OLS_OrderTrade = lm(log(orderTrade$`GDP.per.worker.(in.US.dollars)`)[1:100] ~ log(orderTrade$`Area.(in.sq.miles)`)[1:100]  + log(orderTrade$`Workers.(in.thousands)`)[1:100] + orderTrade$Trade[1:100] )
+res_holdout = log(orderTrade$`GDP.per.worker.(in.US.dollars)`)[101:150] - summary(OLS_OrderTrade)$coefficients[1] - summary(OLS_OrderTrade)$coefficients[2] * log(orderTrade$`Area.(in.sq.miles)`)[101:150] - summary(OLS_OrderTrade)$coefficients[3] * log(orderTrade$`Workers.(in.thousands)`)[101:150] - summary(OLS_OrderTrade)$coefficients[4] * orderTrade$Trade[101:150]
+chi2 = sum(res_holdout^2)/(sigma(OLS_OrderTrade)^2)
+chi2_summary=c(chi2,pchisq(chi2,df=50,lower.tail=FALSE))
+names(chi2_summary)=c("Test-statistic","P-value")
+stargazer(chi2_summary,type="text")
+
+##area
+OLS_OrderArea = lm(log(orderArea$`GDP.per.worker.(in.US.dollars)`)[1:100] ~ log(orderArea$`Area.(in.sq.miles)`)[1:100]  + log(orderArea$`Workers.(in.thousands)`)[1:100] + orderArea$Trade[1:100] )
+res_holdout = log(orderArea$`GDP.per.worker.(in.US.dollars)`)[101:150] - summary(OLS_OrderArea)$coefficients[1] - summary(OLS_OrderArea)$coefficients[2] * log(orderArea$`Area.(in.sq.miles)`)[101:150] - summary(OLS_OrderArea)$coefficients[3] * log(orderArea$`Workers.(in.thousands)`)[101:150] - summary(OLS_OrderArea)$coefficients[4] * orderArea$Trade[101:150]
+chi2 = sum(res_holdout^2)/(sigma(OLS_OrderArea)^2)
+chi2_summary=c(chi2,pchisq(chi2,df=50,lower.tail=FALSE))
+names(chi2_summary)=c("Test-statistic","P-value")
+stargazer(chi2_summary,type="text")
+
+##population
+OLS_OrderPop = lm(log(orderPop$`GDP.per.worker.(in.US.dollars)`)[1:100] ~ log(orderPop$`Area.(in.sq.miles)`)[1:100]  + log(orderPop$`Workers.(in.thousands)`)[1:100] + orderPop$Trade[1:100] )
+res_holdout = log(orderPop$`GDP.per.worker.(in.US.dollars)`)[101:150] - summary(OLS_OrderPop)$coefficients[1] - summary(OLS_OrderPop)$coefficients[2] * log(orderPop$`Area.(in.sq.miles)`)[101:150] - summary(OLS_OrderPop)$coefficients[3] * log(orderPop$`Workers.(in.thousands)`)[101:150] - summary(OLS_OrderPop)$coefficients[4] * orderPop$Trade[101:150]
+chi2 = sum(res_holdout^2)/(sigma(OLS_OrderPop)^2)
+chi2_summary=c(chi2,pchisq(chi2,df=50,lower.tail=FALSE))
+names(chi2_summary)=c("Test-statistic","P-value")
+stargazer(chi2_summary,type="text")
 
 #-------------------------------------------------------------------
 ##Endogeneity
