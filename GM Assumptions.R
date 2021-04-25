@@ -211,3 +211,17 @@ stargazer(chi2_summary,type="text")
 
 #-------------------------------------------------------------------
 ##Endogeneity
+
+## OLS
+reg_OLS = lm(gdp~trade)
+
+## 2SLS estimation
+reg_IV=ivreg(gdp~trade | neighbors + landlock + pop + area)
+
+## First stage OLS estimation
+reg_1stage=lm(trade~neighbors + landlock + pop + area)
+
+## Hausman test
+reg_Haus=lm(gdp~trade+reg_1stage$residuals)
+stargazer(reg_OLS,reg_IV,reg_Haus,type="text",style="all")
+
