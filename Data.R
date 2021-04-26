@@ -1,3 +1,7 @@
+library(reprex)
+
+
+
 ####################################################################
 ####################################################################
 ###                   Case Econometrics                          ###
@@ -32,7 +36,7 @@ library(EconometricsUGent)  ## Additional functions
 ####################################################################
 ## Import data set
 ####################################################################
-data = read.xlsx("Trade.xlsx", colNames = TRUE)
+data = read.xlsx("C:/Users/joaki/OneDrive/Documenten/School/Econometrie/Econometrics/Trade.xlsx", colNames = TRUE)
 
 ####################################################################
 ## Determine number of observations and number of variables

@@ -19,7 +19,7 @@ hist(MU)
 #-------------------------------------------------------------------
 ##Multicollinearity
 
-#als de R² hoog is en t statistiek laag/pairwise correlation checken
+#als de R2 hoog is en t statistiek laag/pairwise correlation checken
 cor(trade, pop)
 cor(trade, area)
 cor(pop, area)
@@ -60,6 +60,8 @@ GQ
 auxiliary = lm(MU ~ area + pop + trade + I(trade^2) + I(pop^2) + I(area^2) + area*pop + area*trade + pop*trade)
 xiTest = 150 * summary(auxiliary)$r.squared
 print(xiTest)
+qchisq(p = 0.05, df = 9, lower.tail = FALSE)
+
 stargazer(auxiliary,type="text",style="all",dep.var.labels = "squared(res)")
 #homoscedasticity can't be rejected
 
@@ -168,13 +170,13 @@ resettest(OLS)
 OLS_MU_Trade = lm(MU ~ poly(trade, degree = 3))
 xiTest = 150 * summary(OLS_MU_Trade)$r.squared
 print(xiTest)
-qchisq(p = 0.05, df = 3, lower.tail = FALSE)
+qchisq(p = 0.05, df = 2, lower.tail = FALSE)
 
 ##area
 OLS_MU_Area = lm(MU ~ poly(area, degree = 3))
 xiTest = 150 * summary(OLS_MU_Area)$r.squared
 print(xiTest)
-qchisq(p = 0.05, df = 3, lower.tail = FALSE)
+qchisq(p = 0.05, df = 2, lower.tail = FALSE)
 
 ##population
 OLS_MU_Pop = lm(MU ~ poly(pop, degree = 3))
@@ -220,6 +222,7 @@ reg_IV=ivreg(gdp~trade | neighbors + landlock + pop + area)
 
 ## First stage OLS estimation
 reg_1stage=lm(trade~neighbors + landlock + pop + area)
+stargazer(reg_1stage,style="all",type="text")
 
 ## Hausman test
 reg_Haus=lm(gdp~trade+reg_1stage$residuals)
