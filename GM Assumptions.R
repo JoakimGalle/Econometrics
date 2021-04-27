@@ -84,8 +84,6 @@ plot(MU_iMinEen,MU_i)
 MU_i = summary(OLS)$residuals[2:150]
 MU_iMinEen = summary(OLS)$residuals[1:149]
 plot(MU_iMinEen,MU_i)
-
-plot(trade, MU)
      
 #runs test
 Nruns = runs(OLS_OrderTrade)
@@ -162,17 +160,14 @@ stargazer(chi2_summary,type="text")
 #-------------------------------------------------------------------
 ##Endogeneity
 
-## OLS
-reg_OLS = lm(gdp~trade)
-
 ## 2SLS estimation
-reg_IV=ivreg(gdp~trade | neighbors + landlock + pop + area)
+reg_IV=ivreg(gdp ~ trade + area + pop | neighbors + landlock + pop + area)
 
 ## First stage OLS estimation
-reg_1stage=lm(trade~neighbors + landlock + pop + area)
+reg_1stage=lm(trade ~ neighbors + landlock + gdp)
 stargazer(reg_1stage,style="all",type="text")
 
 ## Hausman test
-reg_Haus=lm(gdp~trade+reg_1stage$residuals)
-stargazer(reg_OLS,reg_IV,reg_Haus,type="text",style="all")
+reg_Haus=lm(gdp ~ trade + pop + area + reg_1stage$residuals)
+stargazer(OLS,reg_IV,reg_Haus,type="text",style="all")
 
