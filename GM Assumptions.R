@@ -157,6 +157,14 @@ chi2_summary=c(chi2,pchisq(chi2,df=50,lower.tail=FALSE))
 names(chi2_summary)=c("Test-statistic","P-value")
 stargazer(chi2_summary,type="text")
 
+##population
+OLS_OrderPop = lm(log(orderPop$`GDP.per.worker.(in.US.dollars)`)[1:100] ~ log(orderPop$`Area.(in.sq.miles)`)[1:100]  + log(orderPop$`Workers.(in.thousands)`)[1:100] + orderPop$Trade[1:100] )
+res_holdout = log(orderPop$`GDP.per.worker.(in.US.dollars)`)[101:150] - summary(OLS_OrderPop)$coefficients[1] - summary(OLS_OrderPop)$coefficients[2] * log(orderPop$`Area.(in.sq.miles)`)[101:150] - summary(OLS_OrderPop)$coefficients[3] * log(orderPop$`Workers.(in.thousands)`)[101:150] - summary(OLS_OrderPop)$coefficients[4] * orderPop$Trade[101:150]
+chi2 = sum(res_holdout^2)/(sigma(OLS_OrderPop)^2)
+chi2_summary=c(chi2,pchisq(chi2,df=50,lower.tail=FALSE))
+names(chi2_summary)=c("Test-statistic","P-value")
+stargazer(chi2_summary,type="text")
+
 #-------------------------------------------------------------------
 ##Endogeneity
 
@@ -164,7 +172,7 @@ stargazer(chi2_summary,type="text")
 reg_IV=ivreg(gdp ~ trade + area + pop | neighbors + landlock + pop + area)
 
 ## First stage OLS estimation
-reg_1stage=lm(trade ~ neighbors + landlock + gdp)
+reg_1stage=lm(trade ~ neighbors + landlock + area + pop)
 stargazer(reg_1stage,style="all",type="text")
 
 ## Hausman test
