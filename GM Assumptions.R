@@ -38,7 +38,6 @@ print(VIF_area)
 print(VIF_pop)
 
 #VIF vrij laag, niets droppen (ook omdat pop en area controlevariabelen zijn)
-OLS_AreaRemoved = lm(gdp ~ trade + pop)
 
 #-------------------------------------------------------------------
 ##Heteroscedasticity
@@ -66,6 +65,7 @@ GQ
 auxiliary = lm(I(MU^2) ~ area + pop + trade + I(trade^2) + I(pop^2) + I(area^2) + area*pop + area*trade + pop*trade)
 xiTest = 150 * summary(auxiliary)$r.squared
 print(xiTest)
+pchisq(q = xiTest, df = 9, lower.tail = FALSE)
 qchisq(p = 0.05, df = 9, lower.tail = FALSE)
 
 stargazer(auxiliary,type="text",style="all",dep.var.labels = "squared(res)")
@@ -79,10 +79,6 @@ stargazer(auxiliary,type="text",style="all",dep.var.labels = "squared(res)")
 
 MU_i = summary(OLS_OrderTrade)$residuals[2:150]
 MU_iMinEen = summary(OLS_OrderTrade)$residuals[1:149]
-plot(MU_iMinEen,MU_i)
-
-MU_i = summary(OLS)$residuals[2:150]
-MU_iMinEen = summary(OLS)$residuals[1:149]
 plot(MU_iMinEen,MU_i)
      
 #runs test
@@ -178,4 +174,3 @@ stargazer(reg_1stage,style="all",type="text")
 ## Hausman test
 reg_Haus=lm(gdp ~ trade + pop + area + reg_1stage$residuals)
 stargazer(OLS,reg_IV,reg_Haus,type="text",style="all")
-
