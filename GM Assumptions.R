@@ -10,6 +10,8 @@ MU = residuals(OLS) #create vector of the estimated residuals
 #-------------------------------------------------------------------
 ##Non-normal error terms
 
+skewness(MU)
+kurtosis(MU)
 jarque.test(MU)
 hist(MU)
 
