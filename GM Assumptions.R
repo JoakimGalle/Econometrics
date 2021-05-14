@@ -59,9 +59,17 @@ plot(area, I(MU^2))
 plot(pop, I(MU^2))
 
 #Goldfeld-Quandt
-GQ = gqtest(OLS_OrderTrade)
-GQ
+
+GQ_Trade = gqtest(OLS_OrderTrade)
+GQ_Trade
 #p value original model 0.8084 => insignificant => do not reject assumption that variance remains constant in first & second part
+
+GQ_Area = gqtest(OLS_OrderArea)
+GQ_Area
+
+GQ_Pop = gqtest(OLS_OrderPop)
+GQ_Pop
+
 
 #White test
 auxiliary = lm(I(MU^2) ~ area + pop + trade + I(trade^2) + I(pop^2) + I(area^2) + area*pop + area*trade + pop*trade)
