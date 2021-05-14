@@ -76,7 +76,6 @@ auxiliary = lm(I(MU^2) ~ area + pop + trade + I(trade^2) + I(pop^2) + I(area^2) 
 xiTest = 150 * summary(auxiliary)$r.squared
 print(xiTest)
 pchisq(q = xiTest, df = 9, lower.tail = FALSE)
-qchisq(p = 0.05, df = 9, lower.tail = FALSE)
 
 stargazer(auxiliary,type="text",style="all",dep.var.labels = "squared(res)")
 #homoscedasticity can't be rejected
@@ -201,19 +200,16 @@ resettest(OLS_OrderTrade)
 OLS_MU_Trade = lm(MU ~ poly(trade, degree = 3))
 xiTest = 150 * summary(OLS_MU_Trade)$r.squared
 print(xiTest)
-qchisq(p = 0.05, df = 2, lower.tail = FALSE)
 
 ##area
 OLS_MU_Area = lm(MU ~ poly(area, degree = 3))
 xiTest = 150 * summary(OLS_MU_Area)$r.squared
 print(xiTest)
-qchisq(p = 0.05, df = 2, lower.tail = FALSE)
 
 ##population
 OLS_MU_Pop = lm(MU ~ poly(pop, degree = 3))
 xiTest = 150 * summary(OLS_MU_Pop)$r.squared
 print(xiTest)
-qchisq(p = 0.05, df = 2, lower.tail = FALSE)
 #No proof towards specification error
 
 #Forecast Xi² test
