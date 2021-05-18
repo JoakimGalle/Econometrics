@@ -1,7 +1,13 @@
-plot(continent, gdp)
-OLS_Final = lm(gdp ~ trade + area + pop + continent)
-summary(OLS_Final)
-stargazer(OLS, OLS_Final, type = "text", style = "all")
-final = ivreg(gdp ~ trade + area + pop + continent | area + pop + trade + landlock + neighbors + continent)
-stargazer(final, type = "text", style = "all")
-summary(final)
+finalSpecification=ivreg(gdp ~ trade + area + pop | neighbors + landlock + pop + area)
+
+summary(finalSpecification)
+stargazer(OLS, finalSpecification, type = "text", style = "all")
+
+
+
+
+
+
+
+
+
