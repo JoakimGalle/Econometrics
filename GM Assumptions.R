@@ -45,10 +45,10 @@ print(VIF_pop)
 ##Heteroscedasticity
 
 orderTrade = data[order(data$Trade),]
-orderPop = data[order(data$Area),]
-orderArea = data[order(log(data$`Workers.(in.thousands)`)),]
+orderPop = data[order(log(data$`Workers.(in.thousands)`)),]
+orderArea = data[order(data$Area),]
 OLS_OrderTrade = lm(log(orderTrade$`GDP.per.worker.(in.US.dollars)`) ~ log(orderTrade$`Area.(in.sq.miles)`)  + log(orderTrade$`Workers.(in.thousands)`) + orderTrade$Trade )
-OLS_OrderArea = lm(log(orderArea$`GDP.per.worker.(in.US.dollars)`) ~ log(orderArea$`Area.(in.sq.miles)`)  + log(orderArea$`Workers.(in.thousands)`) + data$Trade )
+OLS_OrderArea = lm(log(orderArea$`GDP.per.worker.(in.US.dollars)`) ~ log(orderArea$`Area.(in.sq.miles)`)  + log(orderArea$`Workers.(in.thousands)`) + orderArea$Trade )
 OLS_OrderPop = lm(log(orderPop$`GDP.per.worker.(in.US.dollars)`) ~ log(orderPop$`Area.(in.sq.miles)`)  + log(orderPop$`Workers.(in.thousands)`) + orderPop$Trade )
 
 #graphical
@@ -130,6 +130,10 @@ Nruns = runs(OLS_OrderArea)
 R = Nruns[1]
 N1 = Nruns[2]
 N2 = Nruns[3]
+N=N1+N2
+E_R = 2*N1*N2/N+1
+s_R = sqrt(2*N1*N2*(2*N1*N2-N)/(N^2)/(N-1))
+results_R = c(R,E_R,E_R-1.96*s_R,E_R+1.96*s_R)
 names(results_R)=c("Observed Runs","Expected Runs","95% Lower bound","95% Upper bound")
 stargazer(results_R,type="text")
 
@@ -161,6 +165,10 @@ Nruns = runs(OLS_OrderPop)
 R = Nruns[1]
 N1 = Nruns[2]
 N2 = Nruns[3]
+N=N1+N2
+E_R = 2*N1*N2/N+1
+s_R = sqrt(2*N1*N2*(2*N1*N2-N)/(N^2)/(N-1))
+results_R = c(R,E_R,E_R-1.96*s_R,E_R+1.96*s_R)
 names(results_R)=c("Observed Runs","Expected Runs","95% Lower bound","95% Upper bound")
 stargazer(results_R,type="text")
 
