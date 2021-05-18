@@ -45,8 +45,8 @@ print(VIF_pop)
 ##Heteroscedasticity
 
 orderTrade = data[order(data$Trade),]
+orderArea = data[order(log(data$Area)),]
 orderPop = data[order(log(data$`Workers.(in.thousands)`)),]
-orderArea = data[order(data$Area),]
 OLS_OrderTrade = lm(log(orderTrade$`GDP.per.worker.(in.US.dollars)`) ~ log(orderTrade$`Area.(in.sq.miles)`)  + log(orderTrade$`Workers.(in.thousands)`) + orderTrade$Trade )
 OLS_OrderArea = lm(log(orderArea$`GDP.per.worker.(in.US.dollars)`) ~ log(orderArea$`Area.(in.sq.miles)`)  + log(orderArea$`Workers.(in.thousands)`) + orderArea$Trade )
 OLS_OrderPop = lm(log(orderPop$`GDP.per.worker.(in.US.dollars)`) ~ log(orderPop$`Area.(in.sq.miles)`)  + log(orderPop$`Workers.(in.thousands)`) + orderPop$Trade )
